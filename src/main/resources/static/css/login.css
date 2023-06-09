@@ -1,0 +1,82 @@
+:root {
+	--themeFont: 'Montserrat', sans-serif;
+}
+
+body{
+	background-color:white;
+}
+
+#login-div {
+	width:50%;
+	
+	margin: auto;
+	margin-top: 10%;
+	padding: 5px;
+	
+	text-align:center;
+}
+
+#grid-box{
+	display: grid;
+    grid-template-columns: 15% 70% 15%;
+}
+
+.app-title{
+	font-size:5rem;
+	font-weight:300;
+	font-family: var(--themeFont);
+	
+	height:100px;
+	margin-top:50px;
+	
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	
+}
+
+.login-label {
+	margin-top:5px;
+	font-weight:500;
+	font-family: var(--themeFont);
+	letter-spacing:1px;
+}
+
+.login-message{
+	width: 50%;
+	margin:auto;
+}
+
+[type^="text"] , [type^="password"] {
+	width: 236.23px;
+	font-family: var(--themeFont)
+
+}
+
+[type^="text"]:focus , [type^="password"]:focus {
+	background-color:#F9F5F6;
+	border:2px solid black;
+}
+
+[type^="password"]{
+	letter-spacing:3px;
+}
+
+[type^="submit"]{
+	margin-top:5px;
+}
+
+#reg-link {
+	margin-top:10px;
+}
+
+img {
+	width: 100%;
+	height:200px;
+	object-fit: cover;
+}
+
+
+
+
+
