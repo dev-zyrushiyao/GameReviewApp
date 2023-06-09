@@ -18,6 +18,7 @@
 	<h1>Update <c:out value="${gameInfo.getTitle()}"/> </h1>
 	<a href="/admin/view/game/info/id/${gameInfo.getId()}">GO BACK</a> <!-- TEMPORARY ROUTE -->
 	
+	<label style="color:red"><c:out value="${gameUpdateError}"/></label>
 	<label style="color:green"><c:out value="${gameUpdateMessage}"/></label>
 	<form:form action="/admin/update/game/info/${gameInfo.getId()}" method="POST" modelAttribute="updateGameForm">
 				<input type="hidden" name="_method" value="put">
@@ -55,7 +56,7 @@
 				    
 				    <tr>
 					 	<td><form:label path="trailerUrl">Trailer Url:</form:label></td>
-				      	<td><form:input type="text" path="trailerUrl"/></td>
+				      	<td><form:input type="text" path="trailerUrl" title="https://youtu.be/[dQw4w9WgXcQ]" placeholder="Youtube video ID"/></td>
 				      	<td style="color:red"><form:errors path="trailerUrl" class="text-danger"/></td>
 				    </tr>
 				    

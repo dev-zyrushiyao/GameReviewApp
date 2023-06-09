@@ -3,6 +3,7 @@ package com.codingdojo.GameReview.viewController;
 
 
 
+import java.io.Console;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
@@ -67,6 +68,8 @@ public class GameController {
 		// 1 - TO load Username on the /dashboard page
         String username = principal.getName();
         modelView.addAttribute("currentUser", userService.findByUsername(username));
+        
+       
 			
 			//dropdown-genre
 			List<GameGenreModel> genreList = this.genreService.findAllGenre();
@@ -209,7 +212,15 @@ public class GameController {
 //			return "redirect:/";
 //		}		
 //	}
-
+	
+	@GetMapping("/admin/commands")
+	public String adminCommandPage(Model modelView , Principal principal) {
+		String username = principal.getName();
+		modelView.addAttribute("currentUser", userService.findByUsername(username));
+		
+		
+		return "admin_commands.jsp";
+	}
 	
 	
 	//admin access website after logging in (default user route dashboard , user role restricted)
@@ -362,9 +373,14 @@ public class GameController {
 		if (result.hasErrors()) {
 			return "admin_updateGame.jsp";
 		}else {
-			redirectAttributes.addFlashAttribute("gameUpdateMessage", "Information has been updated!");
-			this.gameService.updateGame(gameModel);
-			return "redirect:/admin/update/game/"+id;
+			if(gameModel.getTrailerUrl().contains("youtu.be")) {
+				redirectAttributes.addFlashAttribute("gameUpdateError", "Full video URL has been detected, please only put youtube ID");
+				return "redirect:/admin/update/game/"+id;	
+			}else {
+				redirectAttributes.addFlashAttribute("gameUpdateMessage", "Information has been updated!");
+				this.gameService.updateGame(gameModel);
+				return "redirect:/admin/update/game/"+id;	
+			}
 		}
 	}
 	
