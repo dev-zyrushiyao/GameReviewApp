@@ -5,6 +5,7 @@
 
 body{
 	background-color:white;
+	
 }
 
 #login-div {
@@ -76,6 +77,10 @@ img {
 	height:200px;
 	object-fit: cover;
 }
+
+
+
+
 
 
 

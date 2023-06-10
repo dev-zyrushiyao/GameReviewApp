@@ -15,6 +15,7 @@
  <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css"/>
  <link rel ="stylesheet" type="text/css" href="/css/dashboard-style.css">
 
+<link rel="icon" type="image/x-icon" href="/icon/favicon.ico">
 
 <!-- GOOGLE API FONT -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +30,7 @@
 			
 	<c:forEach var="userRole" items="${currentUser.getRoles()}">
 		<c:if test="${userRole.getName().contains('ROLE_ADMIN')}">
-			<form action="/admin/commands" method="POST">
+			<form action="/admin/commands" method="GET">
 		        <input type="submit" class="btn btn-primary" id="admin-control-btn" value="ADMIN CONTROLS"/>
 	    	</form>
 		</c:if>

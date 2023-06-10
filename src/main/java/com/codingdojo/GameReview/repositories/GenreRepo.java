@@ -14,5 +14,7 @@ public interface GenreRepo extends CrudRepository<GameGenreModel, Long> {
 	List<GameGenreModel> findAll();
 	List<GameGenreModel> findByGenre(String genre);
 	
+	
+	
 
 }

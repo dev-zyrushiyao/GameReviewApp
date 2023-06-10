@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Game Review App</title>
+<title>Game Review</title>
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css"/>
 <link rel ="stylesheet" type="text/css" href="/css/login.css">
 
@@ -18,16 +18,14 @@
 </head>
 <body>
 		
-		
+		<div id="login-div">	
+
+			<div id="grid-box">
+					<img src="/icon/switch-left-hover.png" id="img-1"  alt="console-left-controller">
+				<p class="h1 app-title">Game Review</p>
+					<img src="/icon/switch-right-hover.png" alt="console-left-controller">
+			</div> 
 	
-	<div id="login-div">	
-		
-			
-		<div id="grid-box">
-			<img src="/icon/switch-left.png" alt="console-left-controller">
-			<p class="h1 app-title">Game Review</p>
-			<img src="/icon/switch-right.png" alt="console-left-controller">
-		</div>
 		<div id="content">	
 			
 			<c:if test="${logoutMessage != null}">
@@ -59,5 +57,7 @@
 		</div>
 		
 	</div>
+	
+	
 </body>
 </html>

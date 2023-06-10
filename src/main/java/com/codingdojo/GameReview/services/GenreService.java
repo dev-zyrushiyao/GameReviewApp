@@ -55,6 +55,8 @@ public class GenreService {
 			this.genreRepo.deleteAll();
 		}
 	
-		
+		public List<GameGenreModel> findGenre(String genre){
+			return this.genreRepo.findByGenre(genre);
+		}
 	
 }

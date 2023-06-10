@@ -41,9 +41,6 @@ import com.codingdojo.GameReview.services.UserService;
 
 import net.bytebuddy.asm.Advice.This;
 
-
-
-
 @Controller
 public class GameController {
 	
@@ -218,7 +215,6 @@ public class GameController {
 		String username = principal.getName();
 		modelView.addAttribute("currentUser", userService.findByUsername(username));
 		
-		
 		return "admin_commands.jsp";
 	}
 	
@@ -367,7 +363,7 @@ public class GameController {
 	}
 	
 	@PutMapping("/admin/update/game/info/{id}")
-	public String updateData(RedirectAttributes redirectAttributes, @PathVariable long id,
+	public String updateGameData(RedirectAttributes redirectAttributes, @PathVariable long id,
 			@Valid @ModelAttribute("updateGameForm") GameModel gameModel , BindingResult result) {
 			
 		if (result.hasErrors()) {
@@ -659,9 +655,16 @@ public class GameController {
 		if(result.hasErrors()) {
 			return "admin_createGenre.jsp";
 		}else {
-			redirectAttributes.addFlashAttribute("genreMessage", "Genre has been successfully added!");
-			this.genreService.createGenre(gameGenreModel);
-			return "redirect:/admin/new/genre";
+			List<GameGenreModel> genreDataChecker = this.genreService.findGenre(gameGenreModel.getGenre());
+			if(!genreDataChecker.isEmpty()) {
+				redirectAttributes.addFlashAttribute("genreError", "Genre is already exist");
+				return "redirect:/admin/new/genre";
+			}else {
+				redirectAttributes.addFlashAttribute("genreMessage", "Genre has been successfully added!");
+				this.genreService.createGenre(gameGenreModel);
+				return "redirect:/admin/new/genre";
+			}
+			
 		}
 	}
 	
@@ -713,7 +716,7 @@ public class GameController {
 		}
 	}
 	
-	@GetMapping("admin/view/list/platform")
+	@GetMapping("/admin/view/list/platform")
 	public String viewListPlatform(Model modelView) {
 		
 		modelView.addAttribute("listOfPlatform", this.platformService.findAllPlatform());
