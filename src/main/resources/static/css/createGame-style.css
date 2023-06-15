@@ -1,0 +1,12 @@
+select {
+	width:233px;
+}
+
+
+[type^="text"] , select {
+	text-align: center;
+}
+
+.alert-msg {
+	text-align:center;
+}

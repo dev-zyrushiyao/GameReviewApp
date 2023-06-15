@@ -14,92 +14,115 @@
 <title><c:out value="${gameInfo.getTitle()}"/> Information</title>
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css"/>
 <link rel ="stylesheet" type="text/css" href="/css/viewgame-style.css">
+ <!-- borrowing CSS for NAV -->
+ <link rel ="stylesheet" type="text/css" href="/css/dashboard-style.css">
+
+<link rel="icon" type="image/x-icon" href="/icon/favicon.ico">	
 </head>
 <body>
 	
+	<!-- TO BE ADD VIEW BOOKMARKS -->
 	<div id="sticky-header">
 		<div id="header-flexbox">
 			<a href="/">GO BACK</a>
+				<c:forEach var="userRole" items="${currentUser.getRoles()}">
+					<c:if test="${userRole.getName().contains('ROLE_ADMIN')}">
+						<a href="/admin/update/game/${gameInfo.getId()}">Update Game</a>
+					</c:if>
+				</c:forEach>
+				
+			<a href="#game-section">Game Info</a>
+			<a href="#pv-section">Trailer</a>
+			<a href="#game_review_title">Reviews</a>
 		</div>
 	</div>
+	
+	<div id="game-section">
+		<div id="game-container">
+			<ul>
+				<li><label class="h1" title="Game Title" id="game_title"> <c:out value="${gameInfo.getTitle()}"/></label></li>
+				<li><img src="${gameInfo.getImageUrl()}" style="object-fit: cover;" alt="video game cover" title="${gameInfo.getTitle()}">
+				<li><label class="h4" title="Genre"> <c:out value="${gameInfo.getGenreEntity().getGenre()}"/></label></li>
+				<li><label class="h4" title="Platform"> <c:out value="${gameInfo.getPlatformEntity().getPlatformName()}"/></label></li>
+				<li>
+					<c:if test="${currentUser.getGames().contains(gameInfo)}">
+						<a style="color:blue;" href="/bookmark/remove/game/id/${gameInfo.getId()}" class="h3">Remove to bookmark</a>
+					</c:if>
+					
+					<c:if test="${!currentUser.getGames().contains(gameInfo)}">
+								<a style="color:blue;" href="/bookmark/add/game/id/${gameInfo.getId()}" class="h3">Add to bookmark</a>
+					</c:if>
+				</li>
+			</ul>
+			
+			<div id="rate-section">
+					<div class="container" style="text-align: center;" >
+						<form:form action="/post/review" method="POST" modelAttribute="reviewForm">
+							<label>Rate the game </label>
+								<form:select path="rating">
+									<option value="5">5 &#9733;</option>
+									<option value="4">4 &#9733;</option>
+									<option value="3">3 &#9733;</option>
+									<option value="2">2 &#9733;</option>
+									<option value="1">1 &#9733;</option>
+								</form:select>
+							<br>
+							<form:textarea path="comment" class="container" style="width:50%;" placeholder="Enter comment here"/>
+							<c:if test="${reviewForm != null}">
+							
+								<form:errors path="comment" class="text-danger" style="color:red"/>
+									<br>
+							</c:if>
+							<input type="submit" class="btn btn-primary" value="SUBMIT">
+								<br>
+							<form:input type="hidden" value="${currentUser.getId()}" path="userEntity" title="User: ${currentUser.getUserName()}"/>
+							<form:input type="hidden" value="${gameInfo.getId()}" path="gameEntity" title="Game: ${gameInfo.getTitle()}"/>
+			 			</form:form>
+					</div>
+			</div>
+		
+		</div>		
+	</div>	
 
 	
-<div id="master-div">
-	<div id="game-container">
-		<ul>
-			<li><img src="${gameInfo.getImageUrl()}">
-			<li><label>Title:<c:out value="${gameInfo.getTitle()}"/></label></li>
-			<li><label>Genre:<c:out value="${gameInfo.getGenreEntity().getGenre()}"/></label></li>
-			<li><label>Platform:<c:out value="${gameInfo.getPlatformEntity().getPlatformName()}"/></label></li>
-			<c:choose>
-			     <c:when test="${currentUser.getGames().contains(gameInfo)}">
-						<li><a href="/bookmark/remove/game/id/${gameInfo.getId()}">Remove Bookmark</a></li>
-				</c:when>
-							      			
-				<c:otherwise>
-						<li><a href="/bookmark/add/game/id/${gameInfo.getId()}">Add Bookmark</a></li>
-				</c:otherwise>
-			</c:choose>  
-			<li>
-				<form:form action="/post/review" method="POST" modelAttribute="reviewForm">
-					<label>Rating:</label>
-						<form:select path="rating">
-							<option value="5">5</option>
-							<option value="4">4</option>
-							<option value="3">3</option>
-							<option value="2">2</option>
-							<option value="1">1</option>
-						</form:select>
-				<li>
-					<label>Review:</label>
-					<br>
-					<form:textarea path="comment" placeholder="Enter comment here"/>
-					<br>
-					<form:errors path="comment" class="text-danger" style="color:red"/>
-				</li>
-				<li>
-					<input type="submit" value="Submit review">
-				</li>	
-					<form:input type="hidden" value="${currentUser.getId()}" path="userEntity" title="User: ${currentUser.getUserName()}"/>
-					<form:input type="hidden" value="${gameInfo.getId()}" path="gameEntity" title="Game: ${gameInfo.getTitle()}"/>
-	 			</form:form>
-			</li>
-		
-			<li> 
-				<label>Game PV:</label>
-				<br>
-				<iframe width="560" height="315" src="https://www.youtube.com/embed/${gameInfo.getTrailerUrl()}" title="YouTube video player"></iframe>
-			</li>
-		</ul>
-	</div>		
-			<!-- Comment List -->
+	<!-- PV  -->
+	<div id="pv-section">
+				<ul>
+					<li> 
+						<p id="game_pv_title" class="h1">Game PV:</p>
+						<br>
+						<iframe width="560" height="315" src="https://www.youtube.com/embed/${gameInfo.getTrailerUrl()}" title="YouTube video player"></iframe>
+					</li>
+				</ul>
+	</div>
+			
+	
+	<!-- Comment List -->
 	<div id="game-comment">
 		<div id="review-header">
-			<h4>Review</h4>
-			<label>View per Rating</label>
-			<br>
-			<label> total of <c:out value="${commentList.size()}"/> comments </label>
-			<form action="/search/rating/${gameInfo.getId()}" method="GET">
-				 <select name="rating-filter">
-							<option value="6">All</option>
-							<option value="5">5</option>
-							<option value="4">4</option>
-							<option value="3">3</option>
-							<option value="2">2</option>
-							<option value="1">1</option>
-				</select> 
-				<input type="submit" value="Search">
-			</form>
+			<p class="h1" id="game_review_title">Review <span id="comment-count"> (<c:out value="${commentList.size()}"/> comments)</span></p>
+			<div id="rate-filter-div">
+				<label>Filter by rating</label>
+					<form action="/search/rating/${gameInfo.getId()}" method="GET">
+						 <select name="rating-filter" id="rate-dropdown">
+									<option value="6">All</option>
+									<option value="5">5</option>
+									<option value="4">4</option>
+									<option value="3">3</option>
+									<option value="2">2</option>
+									<option value="1">1</option>
+						</select> 
+						<input type="submit" value="Search">
+					</form>
+			</div>
+			
 			
 		</div>
 			<c:forEach var="commentLoop" items="${commentList}">
 						 <ul class="comment-content">
-							<li>
-								<span class="username-comment"><c:out value="${commentLoop.getUserEntity().getUserName()}"/>
-								</span><span class="comment-date"><c:out value="${commentLoop.getCreatedAt()}"/></span>
-							</li>
+						 	<li><a style="text-decoration:underline; color:blue;" href="/admin/update/review/${commentLoop.getId()}">EDIT</a> | <a style="text-decoration:underline; color:blue;" href="/admin/delete/review/${commentLoop.getId()}"> REMOVE</a>
+							<li><span class="username-comment"><c:out value="${commentLoop.getUserEntity().getUserName()}"/></span><span class="comment-date"><c:out value="${commentLoop.getCreatedAt()}"/></span></li>
 							<li>Rating: <b><c:out value="${commentLoop.getRating()}"/> Star</b></li>
-							
 							<li class="user-comment">
 								<p>- <c:out value="${commentLoop.getComment()}"/></p>
 							</li>
@@ -108,7 +131,7 @@
 			</c:forEach>
 		
 	</div>
-</div>		<!-- master div end tag -->
-	
+
+
 </body>
 </html>

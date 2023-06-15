@@ -91,6 +91,7 @@ public class GameService {
 		return this.gameRepo.findByReviewEntity(gameReviews);
 	}
 	
+	
 
 	
 }

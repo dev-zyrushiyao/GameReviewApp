@@ -3,6 +3,7 @@ package com.codingdojo.GameReview.models;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,7 +37,7 @@ public class GamePlatformModel {
 	@DateTimeFormat (pattern = "yyyy-MM-dd")
 	private Date updatedAt;
 	
-	@OneToMany(mappedBy = "platformEntity" , fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "platformEntity"  , fetch = FetchType.LAZY)
 	private List<GameModel> gameEntity;
 	
 	@PrePersist

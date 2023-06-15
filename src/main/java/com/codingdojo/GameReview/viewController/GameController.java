@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -219,99 +219,6 @@ public class GameController {
 	}
 	
 	
-	//admin access website after logging in (default user route dashboard , user role restricted)
-	@GetMapping("/admin")
-	public String adminPage(Principal principal, Model modelView , HttpSession session) {
-		String username = principal.getName();
-		modelView.addAttribute("currentUser", userService.findByUsername(username));
-		
-		//dropdown-genre
-		List<GameGenreModel> genreList = this.genreService.findAllGenre();
-		modelView.addAttribute("genreList", genreList);
-		
-		//dropdown-platform
-		List<GamePlatformModel> platformList = this.platformService.findAllPlatform();
-		modelView.addAttribute("platformList", platformList);
-		
-		//------Filter<Genre , Platform>----// -- Add conditional to JSP as well (IF's of controller and JSP in order)
-		//---if session is not yet existed thus object is NULL
-		if( 
-			((session.getAttribute("genreValueSession")) == null) 
-			&& 
-			((session.getAttribute("platformValueSession")) == null)
-			){
-			
-			//table dropdown-ALL
-			List<GameModel> gameList = this.gameService.findAll();
-			modelView.addAttribute("gameList", gameList);
-			
-		//---if session dropdown value is both ALL (ZERO)	
-		}else if(
-				((session.getAttribute("genreValueSession")).equals("0")) 
-				&& 
-				((session.getAttribute("platformValueSession")).equals("0"))
-				){
-			
-			//table dropdown-ALL
-			List<GameModel> gameList = this.gameService.findAll();
-			modelView.addAttribute("gameList", gameList);
-			
-			System.out.println("Both value is 0");
-		
-		//---if session dropdown genre is not Equal to All + dropdown platform is equals to ALL (0)	
-		}else if(
-				(!(session.getAttribute("genreValueSession")).equals("0")) 
-				&& 
-				((session.getAttribute("platformValueSession")).equals("0"))
-				){
-			
-			GameGenreModel typeOfGenre = this.genreService.findGenreId(Long.parseLong(session.getAttribute("genreValueSession").toString()));
-			modelView.addAttribute("filterByInfo", typeOfGenre.getGenre());
-			 
-			Long genreId = Long.parseLong((String)session.getAttribute("genreValueSession"));
-			GameGenreModel gameGenreModel = this.genreService.findGenreId(genreId);
-			List<GameModel> filteredList = this.gameService.findGenreEntity(gameGenreModel);
-
-			modelView.addAttribute("genreId" , genreId); //JSP Comparisson to session genre
-			modelView.addAttribute("gameList", filteredList);
-			
-		
-		//---if session dropdown genre is not Equal to All + dropdown platform is equals to ALL (0)	
-		}else if(
-				((session.getAttribute("genreValueSession")).equals("0")) 
-				&& 
-				(!(session.getAttribute("platformValueSession")).equals("0"))
-				){
-			
-			GamePlatformModel typeOfPlatform = this.platformService.findPlaformId(Long.parseLong(session.getAttribute("platformValueSession").toString()));
-			modelView.addAttribute("filterByInfo", typeOfPlatform.getPlatformName());
-			
-			Long platformId = Long.parseLong((String)session.getAttribute("platformValueSession"));
-			GamePlatformModel gamePlatformModel = this.platformService.findPlaformId(platformId);
-			List<GameModel> filteredList = this.gameService.findPlatformEntity(gamePlatformModel);
-
-			modelView.addAttribute("platformId" , platformId); //JSP Comparisson to session genre
-			modelView.addAttribute("gameList", filteredList);
-		}else {
-			GameGenreModel typeOfGenre = this.genreService.findGenreId(Long.parseLong(session.getAttribute("genreValueSession").toString()));
-			GamePlatformModel typeOfPlatform = this.platformService.findPlaformId(Long.parseLong(session.getAttribute("platformValueSession").toString()));
-			modelView.addAttribute("filterByInfo", typeOfGenre.getGenre() + " , " +  typeOfPlatform.getPlatformName());
-			
-			//filter using 2 dropdown - GET Load page / GET search route / GET LOGOUT
-			Long genreId = Long.parseLong((String)session.getAttribute("genreValueSession"));
-			Long platformId = Long.parseLong((String)session.getAttribute("platformValueSession"));
-		
-			GameGenreModel gameGenreModel = this.genreService.findGenreId(genreId);
-			GamePlatformModel gamePlatformModel = this.platformService.findPlaformId(platformId);
-			List<GameModel> filterGenrePlatform = this.gameService.filterGenrePlatform(gameGenreModel, gamePlatformModel);
-
-			modelView.addAttribute("gameList", filterGenrePlatform);
-		}
-
-		return "admin_dashboard.jsp";
-	}
-
-	
 	
 	@GetMapping("/admin/new/game")
 	public String addGamePage(Model modelView , HttpServletRequest request , HttpSession session) {
@@ -322,7 +229,7 @@ public class GameController {
 		  modelView.addAttribute("platformList", this.platformService.findAllPlatform()); 
 		 
 	
-		return "admin_addGame.jsp";
+		return "admin_createGame.jsp";
 	}
 	
 	@PostMapping("/admin/post/new/game")
@@ -332,7 +239,7 @@ public class GameController {
 		if(result.hasErrors()) {
 			modelView.addAttribute("genreList", this.genreService.findAllGenre());
 			modelView.addAttribute("platformList", this.platformService.findAllPlatform()); 
-			return "admin_addGame.jsp";
+			return "admin_createGame.jsp";
 		}else {
 			if(gameModel.getTrailerUrl().contains("https://youtu.be/")) {
 				
@@ -392,12 +299,12 @@ public class GameController {
 		this.gameService.userAddBookmark(currentUser, gameModel);
 		
 		//Conditional statement for Bookmark
-		//System.out.println(currentUser.getGames().contains(gameModel));
+//		System.out.println(currentUser.getGames().contains(gameModel));
 		
 		return "redirect:/view/game/info/id/" + gameModel.getId();
 	}
 	
-	//Bookmark Game - ADD
+	//Bookmark Game - REMOVE
 	@GetMapping("/bookmark/remove/game/id/{id}")
 	public String bookmarkGameRemove(@PathVariable Long id, Principal principal) {
 		
@@ -453,97 +360,23 @@ public class GameController {
 		String ratingFilter = request.getParameter("rating-filter");
 		Integer gameRating = Integer.parseInt(ratingFilter);
 		
+		String pageTarget = "#game_review_title";
+		
 		if(!ratingFilter.equals("6")) {
 			List<GameReview> gameReview = this.reviewService.FindCommentsRatingOfGame(gameRating , gameModel);
 			modelView.addAttribute("commentList", gameReview);
 			
 			modelView.addAttribute("gameInfo", gameModel);
-			return "admin_viewGame.jsp";
+			
+			return "viewGame.jsp";
 		}else {
 			List<GameReview> gameReview = this.reviewService.findGameEntityComment(gameModel);
 			modelView.addAttribute("commentList", gameReview);
-			return "redirect:/view/game/info/id/" + id;	
+		
+			return "redirect:/view/game/info/id/" + id + pageTarget;	
 		}
 	}
 	
-
-	
-
-	
-	//View game as Admin With Update Game / Update Comments / Delete Comments
-	@GetMapping("/admin/view/game/info/id/{id}")
-	public String viewGameInfoAsAdmin(Principal principal , Model modelView , HttpSession session,
-			@ModelAttribute ("reviewForm") GameReview gameReview , @PathVariable Long id) {
-		
-		//User Data for comments
-		String username = principal.getName();
-	    modelView.addAttribute("currentUser", userService.findByUsername(username));
-		
-		
-		//Game Data to retrieve game information
-		GameModel gameModel = this.gameService.findGameId(id);
-		modelView.addAttribute("gameInfo", gameModel);
-		session.setAttribute("gameIdSession" , gameModel.getId()); //to use on review postmapping
-		
-		
-		
-		//displaying comments (decending order) via which GameModel (name) //gamemodel Object used already invoked findGameId()
-		List<GameReview> userReview = this.reviewService.findGameEntityComment(gameModel);
-		Collections.reverse(userReview);
-		
-//		session.setAttribute("allReview", userReview);
-		modelView.addAttribute("commentList",userReview);
-		
-		return "admin_viewGame.jsp";
-	}
-	
-	//Search rating as Admin
-	@GetMapping("/admin/search/rating/{id}")
-	public String searchRatingAsAdmin(Model modelView, @PathVariable Long id , HttpServletRequest request, HttpSession session) {
-		modelView.addAttribute("reviewForm", new GameReview());
-		
-		GameModel gameModel = this.gameService.findGameId(id);
-		
-		String ratingFilter = request.getParameter("rating-filter");
-		Integer gameRating = Integer.parseInt(ratingFilter);
-		
-		if(!ratingFilter.equals("6")) {
-			List<GameReview> gameReview = this.reviewService.FindCommentsRatingOfGame(gameRating , gameModel);
-			modelView.addAttribute("commentList", gameReview);
-			
-			modelView.addAttribute("gameInfo", gameModel);
-			return "admin_viewGame.jsp";
-		}else {
-			List<GameReview> userReview = this.reviewService.findGameEntityComment(gameModel);
-			modelView.addAttribute("commentList", userReview);
-			return "redirect:/admin/view/game/info/id/" + id;	
-		}
-
-	}
-	
-	@PostMapping("/admin/post/review")
-	public String addReviewAsAdmin(Model modelView, HttpSession session,
-			@Valid @ModelAttribute ("reviewForm") GameReview gameReview , BindingResult result
-			) {
-		
-			//removed the pathvariable to avoid the bug updating a single comment for all user
-			if(result.hasErrors()) {
-				
-				//Game Data to retrieve game information
-				GameModel gameModel = this.gameService.findGameId((Long)session.getAttribute("gameIdSession"));
-				modelView.addAttribute("gameInfo", gameModel);
-				
-				List<GameReview> userReview = this.reviewService.findGameEntityComment(gameModel);
-				Collections.reverse(userReview);
-				session.getAttribute("userReview");
-				modelView.addAttribute("commentList",userReview);
-				return "admin_viewGame.jsp";
-			}else {
-				
-				this.reviewService.createReview(gameReview);
-				return "redirect:/admin/view/game/info/id/" + session.getAttribute("gameIdSession") ;
-			}
-	}
 	
 	@GetMapping("/admin/update/review/{id}")
 	public String updateReviewAsAdminPage(HttpSession session, @PathVariable Long id , Model modelView) {
@@ -572,7 +405,7 @@ public class GameController {
 			this.reviewService.updateReview(gameReview);
 			
 			
-			return "redirect:/admin/update/review/" + id;
+			return "redirect:/update/review/" + id;
 		}
 	}
 	
@@ -594,7 +427,7 @@ public class GameController {
 		//invoking delete method
 		this.reviewService.deleteReviewId(id);
 	
-		return "redirect:/admin/view/game/info/id/" + gameReviewRoute.getGameEntity().getId();
+		return "redirect:/view/game/info/id/" + gameReviewRoute.getGameEntity().getId() + "#game_review_title";
 	}
 	
 	
@@ -618,28 +451,8 @@ public class GameController {
 			}else {
 				
 				this.reviewService.createReview(gameReview);
-				return "redirect:/view/game/info/id/" + session.getAttribute("gameIdSession") ;
+				return "redirect:/view/game/info/id/" + session.getAttribute("gameIdSession");
 			}
-	}
-	
-	@PutMapping("/admin/update/info/genre/id/{id}")
-	public String updateGenreInfo(Model modelView , @PathVariable Long id, RedirectAttributes redirectAttributes,
-			@Valid @ModelAttribute("genreForm") GameGenreModel genreModel , BindingResult result) {
-			
-			if(result.hasErrors()) {
-				//reload the view again
-				GameGenreModel gameGenreModel = this.genreService.findGenreId(id);
-				
-				modelView.addAttribute("gameGenreModel", gameGenreModel);
-				return "admin_updateGenre.jsp";
-			}else {
-				GameGenreModel gameGenreModel = this.genreService.findGenreId(id);
-				String genreMessage = ("Genre ID:" + gameGenreModel.getId() + " has been updated!");
-				redirectAttributes.addFlashAttribute("genreMessage", genreMessage);
-				
-				this.genreService.updateGenre(genreModel);
-				return "redirect:/admin/update/genre/id/" + id;
-			}		
 	}
 	
 	
@@ -657,7 +470,7 @@ public class GameController {
 		}else {
 			List<GameGenreModel> genreDataChecker = this.genreService.findGenre(gameGenreModel.getGenre());
 			if(!genreDataChecker.isEmpty()) {
-				redirectAttributes.addFlashAttribute("genreError", "Genre is already exist");
+				redirectAttributes.addFlashAttribute("genreError", "Genre already exist");
 				return "redirect:/admin/new/genre";
 			}else {
 				redirectAttributes.addFlashAttribute("genreMessage", "Genre has been successfully added!");
@@ -687,12 +500,44 @@ public class GameController {
 		return "admin_updateGenre.jsp";
 	}
 	
+	@PutMapping("/admin/update/info/genre/id/{id}")
+	public String updateGenreInfo(Model modelView , @PathVariable Long id, RedirectAttributes redirectAttributes,
+			@Valid @ModelAttribute("genreForm") GameGenreModel genreModel , BindingResult result) {
+		
+		if(result.hasErrors()) {
+			//reload the view again
+			GameGenreModel gameGenreModel = this.genreService.findGenreId(id);
+			
+			modelView.addAttribute("gameGenreModel", gameGenreModel);
+			return "admin_updateGenre.jsp";
+		}else {
+			GameGenreModel gameGenreModel = this.genreService.findGenreId(id);
+			String genreMessage = ("Genre ID:" + gameGenreModel.getId() + " has been updated!");
+			redirectAttributes.addFlashAttribute("genreMessage", genreMessage);
+			
+			this.genreService.updateGenre(genreModel);
+			return "redirect:/admin/update/genre/id/" + id;
+		}		
+	}
+	
 
 	@GetMapping("/admin/delete/genre/{id}")
-	public String deleteGenre(Model modelView , @PathVariable Long id) {
+	public String deleteGenre(@PathVariable Long id , RedirectAttributes redirectAttributes) {
 		
-		this.genreService.deleteGenreById(id);
-		return "redirect:/admin/view/list/genre";
+		try {
+			this.genreService.deleteGenreById(id);
+			return "redirect:/admin/view/list/genre";
+		}catch(Exception e) {
+			//org.springframework.dao.DataIntegrityViolationException: could not execute statement; 
+			//Cannot delete a platform when used by Game because Game has relation to both (Genre and Platform)
+			
+			String errorMsg = "ERROR: Cannot delete a platform when used by Games because Game has relation to both (Genre and Platform); please delete GAMES that has same genre/platform";
+			redirectAttributes.addFlashAttribute("errorMsg", errorMsg);
+			
+			return "redirect:/admin/view/list/genre";
+		}
+		
+
 	}
 	
 	
@@ -710,11 +555,22 @@ public class GameController {
 		if(result.hasErrors()) {
 			return "admin_createPlatform.jsp";
 		}else {
-			redirectAttributes.addFlashAttribute("platformMessage", "New Platform added successfully!");
-			this.platformService.createPlatform(gamePlatformModel);
-			return "redirect:/admin/new/platform";
+			List<GamePlatformModel> platformDataChecker = this.platformService.findPlatformName(gamePlatformModel.getPlatformName());
+			if(!platformDataChecker.isEmpty()) {
+				System.out.println("TEST");
+				System.out.println(!platformDataChecker.isEmpty());
+				redirectAttributes.addFlashAttribute("platformMessageError", "Platform already exist");
+		
+				return "redirect:/admin/new/platform";
+			}else {
+				redirectAttributes.addFlashAttribute("platformMessage", "Platform has been successfully added!");
+				this.platformService.createPlatform(gamePlatformModel);
+				return "redirect:/admin/new/platform";
+				
+			}
 		}
 	}
+	
 	
 	@GetMapping("/admin/view/list/platform")
 	public String viewListPlatform(Model modelView) {
@@ -734,29 +590,49 @@ public class GameController {
 	
 	@PutMapping("/admin/update/info/platform/id/{id}")
 	public String updatePlatformInfo(Model modelView , @PathVariable Long id, RedirectAttributes redirectAttributes,
-		@Valid @ModelAttribute("platformForm") GamePlatformModel gamePlatformModel , 
+		@Valid @ModelAttribute("platformForm") GamePlatformModel platformModel , 
 		BindingResult result) {
 		
 		if(result.hasErrors()) {
-			System.out.println("this is edit platform");
-			modelView.addAttribute("platformForm", this.platformService.findPlaformId(id));
+			GamePlatformModel gamePlatformModel = this.platformService.findPlaformId(id);
+//			modelView.addAttribute("platformForm", gamePlatformModel);
 			
 			modelView.addAttribute("gamePlatformModel",gamePlatformModel);
+			
 			return "admin_updatePlatform.jsp";
 		}else {
 			String platformMessage = ("Platform ID:" +  this.platformService.findPlaformId(id).getId() + " has been updated!");
 			redirectAttributes.addFlashAttribute("platformMessage", platformMessage);
 			
-			this.platformService.updatePlatform(gamePlatformModel);
+			this.platformService.updatePlatform(platformModel);
 			return "redirect:/admin/update/platform/id/" + id;
 		}
 	}
 	
-	@GetMapping("/admin/delete/platform/{id}")
-	public String deletePlatform(@PathVariable Long id) {
-		this.platformService.deletePlatform(id);
-		return "redirect:/admin/view/list/platform";
-	}
+
+	
+	@DeleteMapping("/admin/delete/platform/{id}")
+	public String deletePlatform(@PathVariable Long id , RedirectAttributes redirectAttributes) {
+		
+		try {
+			this.platformService.deletePlatform(id);
+			return "redirect:/admin/view/list/platform";
+		}catch(Exception e) {
+			//org.springframework.dao.DataIntegrityViolationException: could not execute statement; 
+			//Cannot delete a platform when used by Game because Game has relation to both (Genre and Platform)
+			
+			String errorMsg = "ERROR: Cannot delete a platform when used by Games because Game has relation to both (Genre and Platform); please delete GAMES that has same genre/platform";
+			redirectAttributes.addFlashAttribute("errorMsg", errorMsg);
+			
+			return "redirect:/admin/view/list/platform";
+		}
+		
+		
+		
+			
+		}
+		
+	
 	
 	
 	

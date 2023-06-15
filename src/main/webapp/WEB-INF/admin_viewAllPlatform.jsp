@@ -10,19 +10,28 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Platform DataList | (Admin)</title>
+<title>DataList | GameReview</title>
+<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css"/>
+<link rel ="stylesheet" type="text/css" href="/css/dataList-style.css">
+
+<link rel="icon" type="image/x-icon" href="/icon/favicon.ico">	
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css"/>
 </head>
 <body>
 	
-	<a href="/admin/new/platform">Go Back</a>
+	<div id="back-button">
+		<a href="/admin/commands" style="text-decoration:none;">
+			<span id="back-arrow">&#8249;</span>
+			<span id="back-link"> Go back</span>
+		</a>
+	</div>
 	
-		<h1>Platform DataList</h1>
-		
+		<p class="h1" style="text-align:center;">Platform DataList</p>
+		<label style="text-align:center; color:red;"><c:out value="${errorMsg}"/></label>
 		
  	<table class="table table-striped">
   <thead>
-    <tr>
+    <tr id="tbl-title">
       <th scope="col">ID</th>
       <th scope="col">Genre</th>
       <th scope="col">Created At:</th>
@@ -33,7 +42,7 @@
   </thead>
   <tbody>
   <c:forEach var="DataList" items="${listOfPlatform}">
-	    <tr>
+	    <tr class="tbl-data">
 	      <th scope="row"> <c:out value="${DataList.getId()}"/></th>
 	       <td><c:out value="${DataList.getPlatformName()}"/></td>
 	       <td><c:out value="${DataList.getCreatedAt()}"/></td>
@@ -41,12 +50,13 @@
 	         <td>
 	      
 	         	<form action="/admin/update/platform/id/${DataList.getId()}">
-	         		<input type="submit" value="UPDATE">
+	         		<input type="submit" class="btn btn-info" value="UPDATE">
 	         	</form>
 	         	
-	         	<form action="/admin/delete/platform/${DataList.getId()}">
-	         		<input type="submit" value="DELETE" onClick="return confirm('Are you sure you want to delete [ID:' + ${DataList.getId()} + ']')">
-	         	</form>
+	         	<form:form action="/admin/delete/platform/${DataList.getId()}">
+	         		<input type="hidden" name="_method" value="DELETE">
+	         		<input type="submit" class="btn btn-danger"  value="DELETE" onClick="return confirm('Are you sure you want to delete [ID:' + ${DataList.getId()} + ']')">
+	         	</form:form>
 	         </td>
 	    </tr>
 	</c:forEach>

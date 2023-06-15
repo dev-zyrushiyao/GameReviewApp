@@ -11,5 +11,6 @@ import com.codingdojo.GameReview.models.GamePlatformModel;
 public interface PlatformRepo extends CrudRepository<GamePlatformModel, Long> {
 	
 	List<GamePlatformModel> findAll();
+	List<GamePlatformModel> findByPlatformName(String platformName);
 	
 }

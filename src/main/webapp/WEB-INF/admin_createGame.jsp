@@ -11,31 +11,45 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Add Game</title>
+<title>Create Game | Game Review</title>
+<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css"/>
+<!-- borrowing CSS for Form -->
+<link rel ="stylesheet" type="text/css" href="/css/login.css">
+<link rel ="stylesheet" type="text/css" href="/css/register.css">
+<link rel ="stylesheet" type="text/css" href="/css/genre-style.css">
+<!-- Own CSS for Dropdown Design -->
+<link rel ="stylesheet" type="text/css" href="/css/createGame-style.css">
+
+<link rel="icon" type="image/x-icon" href="/icon/favicon.ico">	
 </head>
 <body>
 	
-	
-	<h1>Add a new game</h1>
-	<a href="/admin"> dashboard</a>
-	
+	<div id="back-button">
+		<a href="/admin/commands">
+			<span id="back-arrow">&#8249;</span>
+			<span id="back-link"> Go back</span>
+		</a>
+	</div>
 	
 	<form:form action="/admin/post/new/game" method="POST" modelAttribute="gameForm">
-				<label style="color:green"><c:out value="${gameCreateMessage}"/></label>
-				<label style="color:red"><c:out value="${gameCreateMessageError}"/></label>
-				<table class="table">
+				<p class="h3 app-title">Create Game</p>
+				<p style="color:green" class="alert-msg"><c:out value="${gameCreateMessage}"/></p>
+				<p style="color:red" class="alert-msg"><c:out value="${gameCreateMessageError}"/></p>
+				<table class="table table-borderless">
 				  <thead>
-				
+				  	<tr>
+				  	</tr>
 				  </thead>
 				  <tbody>
 				    
 				    <tr>
+				      	<td><form:errors path="title" class="text-danger" style="color:red"/></td>
 				      	<td><form:label path="title">Game Title:</form:label></td>
 				      	<td><form:input type="text" path="title"/></td>
-				      	<td><form:errors path="title" class="text-danger" style="color:red"/></td>
 				    </tr>
 				   	
 				   	<tr>
+				   		<td style="color:red"><form:errors path="genreEntity" class="text-danger"/></td>
 				   	  	<td><form:label path="genreEntity">Genre:</form:label></td>
 				      	<td>
 				      		<form:select path="genreEntity">
@@ -44,24 +58,22 @@
 					  			</c:forEach>
 				  			</form:select>
 				      	</td> 
-				      	<td style="color:red"><form:errors path="genreEntity" class="text-danger"/></td>
 				    </tr>
 				    
 				    <tr>
+				    	<td style="color:red"><form:errors path="imageUrl" class="text-danger"/></td>
 				      	<td><form:label path="imageUrl">Image Url:</form:label></td>
 				      	<td><form:input type="text" path="imageUrl"/></td>
-				      	<td style="color:red"><form:errors path="imageUrl" class="text-danger"/></td>
-				
 				    </tr>
 				    
 				    <tr>
+				    	<td style="color:red"><form:errors path="trailerUrl" class="text-danger"/></td>
 					 	<td><form:label path="trailerUrl">Trailer Url:</form:label></td>
 				      	<td><form:input type="text" path="trailerUrl" title="https://youtu.be/[dQw4w9WgXcQ]" placeholder="Youtube video ID"/></td>
-				      	<td style="color:red"><form:errors path="trailerUrl" class="text-danger"/></td>
-				      	
 				    </tr>
 				    
 				    <tr>
+				    	<td style="color:red"><form:errors path="platformEntity" class="text-danger"/></td>
 					 	<td><form:label path="platformEntity">Platform</form:label></td>
 				      	<td>
 				      		<form:select path="platformEntity">
@@ -70,13 +82,12 @@
 								</c:forEach>
 							</form:select>
 				      	</td> 
-				      	<td style="color:red"><form:errors path="platformEntity" class="text-danger"/></td>
+				      	
+				    	<td><input type="submit" value="SUBMIT" class="btn btn-primary" id="align-button"></td>
 				    </tr>
 				    
 				  </tbody>
-				</table>
-				<input type="submit" value="Submit"> <input type="reset" value="Clear">
-				
+				</table>				
 			</form:form>
 </body>
 </html>

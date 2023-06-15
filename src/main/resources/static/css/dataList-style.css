@@ -1,0 +1,39 @@
+:root {
+	--themeFont: 'Montserrat', sans-serif;
+}
+
+#back-button {
+	font-size:2rem;
+	font-family: var(--themeFont);
+	
+	color:blue;
+	
+	height:100px;
+}
+
+#back-arrow {
+	font-size:100px;
+	position:relative;
+	top:-37px;
+}
+
+a{
+	text-decoration: none;
+}
+
+#back-link{
+	position:relative;
+	top:-50px;
+}
+
+form{
+	display: inline-block;
+}
+
+#tbl-title > *{
+	text-align: center;
+}
+
+.tbl-data > * {
+	text-align: center;
+}

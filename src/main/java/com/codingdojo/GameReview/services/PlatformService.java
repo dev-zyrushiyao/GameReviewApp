@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
+import com.codingdojo.GameReview.models.GameModel;
 import com.codingdojo.GameReview.models.GamePlatformModel;
 
 import com.codingdojo.GameReview.repositories.PlatformRepo;
@@ -52,5 +52,8 @@ public class PlatformService {
 	public void deleteAllPlatform() {
 		this.platformRepo.deleteAll();
 	}
-
+	
+	public List<GamePlatformModel> findPlatformName(String platformName){
+		return this.platformRepo.findByPlatformName(platformName);
+	}
 }

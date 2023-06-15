@@ -36,7 +36,7 @@
 				<label style="color:green"><c:out value="${genreMessage}"/></label>
 				<label style="color:red"><c:out value="${genreError}"/></label>
 				
-				<form:errors path="genre" style="color:red"/>
+				<p><form:errors path="genre" style="color:red"/><p>
 				
 			<table class="table table-borderless">
 			<thead>

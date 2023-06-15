@@ -43,7 +43,6 @@
 	</div>
 	
 		<form action="/search/" method="GET">
-
 			<Label>Filter:</Label>
 	  	
 			 <select name="genre_value">
@@ -65,7 +64,7 @@
 </div>
 	
 	<c:if test="${filterByInfo != null}">
-				<p class="h3"> Games filter: [<c:out value="${filterByInfo}"/>]</p>
+				<p class="h3" style="text-align:center; padding:5px;" > Games filter: [<c:out value="${filterByInfo}"/>]</p>
 	</c:if>
 	
 	<c:if test="${filterByInfo == null}">

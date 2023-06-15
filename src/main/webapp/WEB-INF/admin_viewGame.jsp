@@ -14,6 +14,8 @@
 <title><c:out value="${gameInfo.getTitle()}"/> Information</title>
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css"/>
 <link rel ="stylesheet" type="text/css" href="/css/viewgame-style.css">
+
+<link rel="icon" type="image/x-icon" href="/icon/favicon.ico">	
 </head>
 <body>
 	
@@ -33,7 +35,7 @@
 			<li><label>Genre: <c:out value="${gameInfo.getGenreEntity().getGenre()}"/></label></li>
 			<li><label>Platform: <c:out value="${gameInfo.getPlatformEntity().getPlatformName()}"/></label></li>
 			<li>
-				<form:form action="/admin/post/review" method="POST" modelAttribute="reviewForm">
+				<form:form action=:/post/review" method="POST" modelAttribute="reviewForm">
 					<label>Rating: </label>
 						<form:select path="rating">
 							<option value="5">5</option>
