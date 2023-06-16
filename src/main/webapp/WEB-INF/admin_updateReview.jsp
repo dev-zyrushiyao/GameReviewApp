@@ -16,7 +16,7 @@
 <body>
 	
 	
-	<a href="/admin/view/game/info/id/${gameReview.getGameEntity().getId()}">Go Back</a>
+	<a href="/view/game/info/id/${gameReview.getGameEntity().getId()}">Go Back</a>
 	<h1>Update comment</h1>
 	
 	

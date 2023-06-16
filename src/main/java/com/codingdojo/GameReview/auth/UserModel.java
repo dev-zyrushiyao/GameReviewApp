@@ -27,7 +27,13 @@ import com.codingdojo.GameReview.models.GameModel;
 @Entity
 @Table(name = "user_account")
 public class UserModel {
-
+	
+		//Before you create an account
+			//Inject command below on MySQL WorkBench ROLE TABLE (double click schema first) or make API services to add Roles via POSTMAN 
+			//INSERT INTO roles (name) VALUES ('ROLE_USER');
+			//INSERT INTO roles (name) VALUES ('ROLE_ADMIN');
+		
+	
 	  	@Id
 	    @GeneratedValue(strategy=GenerationType.IDENTITY)
 	    private Long id;

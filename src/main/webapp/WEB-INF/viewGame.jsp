@@ -21,19 +21,27 @@
 </head>
 <body>
 	
-	<!-- TO BE ADD VIEW BOOKMARKS -->
+	<!-- TO BE ADD VIEW BOOKMARKS + delete game -->
 	<div id="sticky-header">
 		<div id="header-flexbox">
-			<a href="/">GO BACK</a>
-				<c:forEach var="userRole" items="${currentUser.getRoles()}">
-					<c:if test="${userRole.getName().contains('ROLE_ADMIN')}">
-						<a href="/admin/update/game/${gameInfo.getId()}">Update Game</a>
-					</c:if>
+			<a href="/">GO BACK</a> 
+				<span class="link-separator"> / </span>
+					<c:forEach var="userRole" items="${currentUser.getRoles()}">
+						<c:if test="${userRole.getName().contains('ROLE_ADMIN')}">
+							<a href="/admin/update/game/${gameInfo.getId()}">Update Game</a>
+								<span class="link-separator"> / </span>
+							 <a href="/admin/delete/game/id/${gameInfo.getId()}" onClick="return confirm('All data of the game including the comments will be deleted, are you sure you want to delete?')">Delete Game</a> 
+								<span class="link-separator"> / </span>
+						</c:if>
 				</c:forEach>
 				
 			<a href="#game-section">Game Info</a>
+				<span class="link-separator"> / </span>
 			<a href="#pv-section">Trailer</a>
+				<span class="link-separator"> / </span>
 			<a href="#game_review_title">Reviews</a>
+						<span class="link-separator"> / </span>
+			<a href="/view/bookmark/">View Bookmarks</a>
 		</div>
 	</div>
 	
@@ -69,7 +77,7 @@
 							<br>
 							<form:textarea path="comment" class="container" style="width:50%;" placeholder="Enter comment here"/>
 							<c:if test="${reviewForm != null}">
-							
+									<br>
 								<form:errors path="comment" class="text-danger" style="color:red"/>
 									<br>
 							</c:if>
@@ -103,7 +111,7 @@
 			<p class="h1" id="game_review_title">Review <span id="comment-count"> (<c:out value="${commentList.size()}"/> comments)</span></p>
 			<div id="rate-filter-div">
 				<label>Filter by rating</label>
-					<form action="/search/rating/${gameInfo.getId()}" method="GET">
+					<form action="/search/rating/${gameInfo.getId()}#game_review_title" method="GET"> <!-- Added Page Target at the end of URL (not included on controller ROUTE)  -->
 						 <select name="rating-filter" id="rate-dropdown">
 									<option value="6">All</option>
 									<option value="5">5</option>
@@ -119,8 +127,14 @@
 			
 		</div>
 			<c:forEach var="commentLoop" items="${commentList}">
+					<c:forEach var="userRole" items="${currentUser.getRoles()}">
+						<c:if test="${userRole.getName().contains('ROLE_ADMIN')}">	
+							<div style="width:50%; margin:auto; position:relative; top:20px;">
+							 	<a style="text-decoration:underline; color:blue;" href="/admin/update/review/${commentLoop.getId()}">EDIT</a> | <a style="text-decoration:underline; color:blue;" href="/admin/delete/review/${commentLoop.getId()}"> REMOVE</a>
+							 </div>
+						 </c:if>
+					</c:forEach>
 						 <ul class="comment-content">
-						 	<li><a style="text-decoration:underline; color:blue;" href="/admin/update/review/${commentLoop.getId()}">EDIT</a> | <a style="text-decoration:underline; color:blue;" href="/admin/delete/review/${commentLoop.getId()}"> REMOVE</a>
 							<li><span class="username-comment"><c:out value="${commentLoop.getUserEntity().getUserName()}"/></span><span class="comment-date"><c:out value="${commentLoop.getCreatedAt()}"/></span></li>
 							<li>Rating: <b><c:out value="${commentLoop.getRating()}"/> Star</b></li>
 							<li class="user-comment">
@@ -129,8 +143,8 @@
 						</ul>
 					
 			</c:forEach>
-		
 	</div>
+	
 
 
 </body>

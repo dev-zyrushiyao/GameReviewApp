@@ -33,7 +33,7 @@ public class GameGenreModel {
 	@Size(min=3, max=20)
 	private String genre;
 	
-	@OneToMany(mappedBy = "genreEntity" , fetch = FetchType.LAZY , cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "genreEntity" , fetch = FetchType.LAZY)
 	private List<GameModel> gameEntity;
 	
 	@Column(updatable = false)

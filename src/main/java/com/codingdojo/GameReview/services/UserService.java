@@ -3,6 +3,8 @@ package com.codingdojo.GameReview.services;
 
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -76,6 +78,10 @@ public class UserService {
     // 3. finds a user by their userName
     public UserModel findByUsername(String userName) {
         return userRepo.findByUserName(userName);
+    }
+    
+    public List<UserModel> findAllUser(){
+    	return userRepo.findAll();
     }
 	
 

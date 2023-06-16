@@ -19,7 +19,6 @@
 	<a href="/admin/view/game/info/id/${gameInfo.getId()}">GO BACK</a> <!-- TEMPORARY ROUTE -->
 	
 	<label style="color:red"><c:out value="${gameUpdateError}"/></label>
-	<label style="color:green"><c:out value="${gameUpdateMessage}"/></label>
 	<form:form action="/admin/update/game/info/${gameInfo.getId()}" method="POST" modelAttribute="updateGameForm">
 				<input type="hidden" name="_method" value="put">
 				<table class="table">

@@ -3,7 +3,6 @@ package com.codingdojo.GameReview.viewController;
 
 
 
-import java.io.Console;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
@@ -13,8 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-
-
+import org.eclipse.jdt.internal.compiler.flow.LoopingFlowContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,7 +37,7 @@ import com.codingdojo.GameReview.services.PlatformService;
 import com.codingdojo.GameReview.services.ReviewService;
 import com.codingdojo.GameReview.services.UserService;
 
-import net.bytebuddy.asm.Advice.This;
+
 
 @Controller
 public class GameController {
@@ -187,12 +185,6 @@ public class GameController {
 		return "redirect:/";
 	}
 	
-	@GetMapping("/search/title/")
-	public String searchTitle(HttpSession session, @RequestParam String title) {
-		session.setAttribute("titleListSession", title);
-		
-		return "redirect:/dashboard";
-	}
 	
 
 // LOGOUT was removed because it has already built-in logout using spring security
@@ -254,8 +246,6 @@ public class GameController {
 		}
 	}
 	
-	
-	//to update as admin
 	@GetMapping("/admin/update/game/{id}")
 	public String updateGamePage(Model modelView , @PathVariable long id) {
 		
@@ -280,11 +270,28 @@ public class GameController {
 				redirectAttributes.addFlashAttribute("gameUpdateError", "Full video URL has been detected, please only put youtube ID");
 				return "redirect:/admin/update/game/"+id;	
 			}else {
-				redirectAttributes.addFlashAttribute("gameUpdateMessage", "Information has been updated!");
 				this.gameService.updateGame(gameModel);
-				return "redirect:/admin/update/game/"+id;	
+				return "redirect:/view/game/info/id/"+id;	
 			}
 		}
+	}
+	
+	@GetMapping("/admin/delete/game/id/{id}")
+	public String deleteGame(@PathVariable Long id) {	
+		
+		GameModel gameModel = this.gameService.findGameId(id);
+		List<UserModel> userBookmarks = gameModel.getUserBookmark();
+		
+			//LOOP Sequence to remove all bookmark users on a game
+			for (int i=0 ; i < userBookmarks.size() ; i++) {
+				UserModel userBooked = this.userService.findByUsername(userBookmarks.get(i).getUserName());
+				this.gameService.userRemoveBookmark(userBooked, gameModel);
+			}
+			
+			//delete the game after removing users bookmark of game (including comments[cascade all])
+			this.gameService.deleteGameId(id);
+		
+		return "redirect:/";
 	}
 	
 	//Bookmark Game - ADD
@@ -315,9 +322,6 @@ public class GameController {
 		
 		this.gameService.userRemoveBookmark(currentUser, gameModel);
 		
-		//Conditional statement for Bookmark
-		//System.out.println(currentUser.getGames().contains(gameModel));
-		
 		return "redirect:/view/game/info/id/" + gameModel.getId();
 	}
 	
@@ -343,23 +347,25 @@ public class GameController {
 		//displaying comments (decending order) via which GameModel (name) //gamemodel Object used already invoked findGameId()
 		List<GameReview> userReview = this.reviewService.findGameEntityComment(gameModel);
 		Collections.reverse(userReview);
-		
 		modelView.addAttribute("commentList",userReview);
 
-		
 		return "viewGame.jsp";
 	}
 	
 	
 	@GetMapping("/search/rating/{id}")
-	public String searchRating(Model modelView, @PathVariable Long id , HttpServletRequest request, HttpSession session) {
+	public String searchRating(Principal principal , Model modelView, @PathVariable Long id , HttpServletRequest request, HttpSession session) {
+		 //User Data for comments
+		String username = principal.getName();
+		UserModel currentUser = userService.findByUsername(username);
+        modelView.addAttribute("currentUser", currentUser); 
+		
+        //Review Form
 		modelView.addAttribute("reviewForm", new GameReview());
 		
 		GameModel gameModel = this.gameService.findGameId(id);
-		
 		String ratingFilter = request.getParameter("rating-filter");
 		Integer gameRating = Integer.parseInt(ratingFilter);
-		
 		String pageTarget = "#game_review_title";
 		
 		if(!ratingFilter.equals("6")) {
@@ -368,7 +374,7 @@ public class GameController {
 			
 			modelView.addAttribute("gameInfo", gameModel);
 			
-			return "viewGame.jsp";
+			return "viewGame.jsp"; //on FORM JSP it has pageTarget on action to prevent page from loading at the top.
 		}else {
 			List<GameReview> gameReview = this.reviewService.findGameEntityComment(gameModel);
 			modelView.addAttribute("commentList", gameReview);
@@ -376,7 +382,6 @@ public class GameController {
 			return "redirect:/view/game/info/id/" + id + pageTarget;	
 		}
 	}
-	
 	
 	@GetMapping("/admin/update/review/{id}")
 	public String updateReviewAsAdminPage(HttpSession session, @PathVariable Long id , Model modelView) {
@@ -404,8 +409,7 @@ public class GameController {
 			redirectAttributes.addFlashAttribute("reviewUpdateMessage", "Review has been updated!");
 			this.reviewService.updateReview(gameReview);
 			
-			
-			return "redirect:/update/review/" + id;
+			return "redirect:/view/game/info/id/" + gameReview.getGameEntity().getId();
 		}
 	}
 	
@@ -432,12 +436,15 @@ public class GameController {
 	
 	
 	@PostMapping("/post/review")
-	public String addReview(Model modelView, HttpSession session,
+	public String addReview(Principal principal , Model modelView, HttpSession session,
 			@Valid @ModelAttribute ("reviewForm") GameReview gameReview , BindingResult result
 			) {
 		
 			//removed the pathvariable to avoid the bug updating a single comment for all user
 			if(result.hasErrors()) {
+				String username = principal.getName();
+				UserModel currentUser = userService.findByUsername(username);
+		        modelView.addAttribute("currentUser", currentUser); 
 				
 				//Game Data to retrieve game information
 				GameModel gameModel = this.gameService.findGameId((Long)session.getAttribute("gameIdSession"));

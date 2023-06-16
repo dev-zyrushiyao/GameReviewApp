@@ -3,7 +3,7 @@ package com.codingdojo.GameReview.models;
 import java.util.Date;
 import java.util.List;
 
-
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -46,7 +46,7 @@ public class GameModel {
 	private String trailerUrl;
 	
 	
-	@OneToMany(mappedBy = "gameEntity" , fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "gameEntity" , cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<GameReview> reviewEntity;
 	
 	@ManyToOne(fetch =  FetchType.LAZY)
