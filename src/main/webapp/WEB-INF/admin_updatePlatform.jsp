@@ -33,7 +33,7 @@
 <div id="genre-div">
 	<form:form action="/admin/update/info/platform/id/${gamePlatformModel.getId()}" method="POST" modelAttribute="platformForm">
 		<input type="hidden" name="_method" value="put">
-		<p class="h3 app-title">Update Platform ID: <c:out value="${gameplatformmodel.getId()}"/></p>
+		<p class="h3 app-title">Update Platform ID: <c:out value="${gamePlatformModel.getId()}"/></p>
 			<p style="color:green"><c:out value="${platformMessage}"/></p>
 			<label><form:errors path="platformName" style="color:red"/></label>
 		

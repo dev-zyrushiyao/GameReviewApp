@@ -33,8 +33,19 @@
 	
 	<form:form action="/admin/post/new/game" method="POST" modelAttribute="gameForm">
 				<p class="h3 app-title">Create Game</p>
-				<p style="color:green" class="alert-msg"><c:out value="${gameCreateMessage}"/></p>
-				<p style="color:red" class="alert-msg"><c:out value="${gameCreateMessageError}"/></p>
+				<div id="game-alert">
+					<c:if test="${gameCreateMessage != null}">
+						<div class="alert alert-success" role="alert"><c:out value="${gameCreateMessage}"/></div>
+					</c:if>
+					
+					<c:if test="${gameCreateMessageError != null}">
+						<div class="alert alert-danger" role="alert"><c:out value="${gameCreateMessageError}"/></div>
+					</c:if>
+					
+					<c:if test="${gameWarning != null}">
+						<div class="alert alert-warning" role="alert"><c:out value="${gameWarning}"/></div>
+					</c:if>
+				</div>
 				<table class="table table-borderless">
 				  <thead>
 				  	<tr>
@@ -43,14 +54,14 @@
 				  <tbody>
 				    
 				    <tr>
-				      	<td><form:errors path="title" class="text-danger" style="color:red"/></td>
 				      	<td><form:label path="title">Game Title:</form:label></td>
+				      	<td><form:errors path="title" class="text-danger" style="color:red"/></td>
 				      	<td><form:input type="text" path="title"/></td>
 				    </tr>
 				   	
 				   	<tr>
-				   		<td style="color:red"><form:errors path="genreEntity" class="text-danger"/></td>
 				   	  	<td><form:label path="genreEntity">Genre:</form:label></td>
+				   		<td style="color:red"><form:errors path="genreEntity" class="text-danger"/></td>
 				      	<td>
 				      		<form:select path="genreEntity">
 					      		<c:forEach var="genreOption" items="${genreList}">
@@ -61,20 +72,20 @@
 				    </tr>
 				    
 				    <tr>
-				    	<td style="color:red"><form:errors path="imageUrl" class="text-danger"/></td>
 				      	<td><form:label path="imageUrl">Image Url:</form:label></td>
+				    	<td style="color:red"><form:errors path="imageUrl" class="text-danger"/></td>
 				      	<td><form:input type="text" path="imageUrl"/></td>
 				    </tr>
 				    
 				    <tr>
+					 	<td><form:label path="trailerUrl" title="https://youtu.be/[dQw4w9WgXcQ]">Trailer Url:</form:label></td>
 				    	<td style="color:red"><form:errors path="trailerUrl" class="text-danger"/></td>
-					 	<td><form:label path="trailerUrl">Trailer Url:</form:label></td>
 				      	<td><form:input type="text" path="trailerUrl" title="https://youtu.be/[dQw4w9WgXcQ]" placeholder="Youtube video ID"/></td>
 				    </tr>
 				    
 				    <tr>
-				    	<td style="color:red"><form:errors path="platformEntity" class="text-danger"/></td>
 					 	<td><form:label path="platformEntity">Platform</form:label></td>
+				    	<td style="color:red"><form:errors path="platformEntity" class="text-danger"/></td>
 				      	<td>
 				      		<form:select path="platformEntity">
 								<c:forEach var="platformOption" items="${platformList}">

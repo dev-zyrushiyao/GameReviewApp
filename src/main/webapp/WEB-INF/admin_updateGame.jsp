@@ -16,7 +16,7 @@
 <body>
 	
 	<h1>Update <c:out value="${gameInfo.getTitle()}"/> </h1>
-	<a href="/admin/view/game/info/id/${gameInfo.getId()}">GO BACK</a> <!-- TEMPORARY ROUTE -->
+	<a href="/admin/view/game/info/id/${gameInfo.getId()}">GO BACK</a> 
 	
 	<label style="color:red"><c:out value="${gameUpdateError}"/></label>
 	<form:form action="/admin/update/game/info/${gameInfo.getId()}" method="POST" modelAttribute="updateGameForm">

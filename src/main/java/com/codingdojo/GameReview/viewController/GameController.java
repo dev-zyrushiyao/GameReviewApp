@@ -215,11 +215,24 @@ public class GameController {
 	@GetMapping("/admin/new/game")
 	public String addGamePage(Model modelView , HttpServletRequest request , HttpSession session) {
 		modelView.addAttribute("gameForm" , new GameModel());
-		
-		
-		  modelView.addAttribute("genreList", this.genreService.findAllGenre());
-		  modelView.addAttribute("platformList", this.platformService.findAllPlatform()); 
-		 
+			
+		List<GameGenreModel> genreData = this.genreService.findAllGenre();
+		List<GamePlatformModel> platformData = this.platformService.findAllPlatform(); 
+			
+		//Dropdown
+		  modelView.addAttribute("genreList", genreData);
+		  modelView.addAttribute("platformList", platformData); 
+		  
+		if(genreData.isEmpty() && platformData.isEmpty()) {
+			modelView.addAttribute("gameWarning", "Warning: No Genre/Platform data was found; please create them first before able to create game to the list");
+			System.out.println("1");
+		}else if (genreData.isEmpty()) {
+			modelView.addAttribute("gameWarning", "Warning: No Genre data was found; please create them first before able to create game on the list");
+			System.out.println("2");
+		}else if (platformData.isEmpty()) {
+			modelView.addAttribute("gameWarning", "Warning: No Platform data was found; please create them first before able to create game on the list");
+			System.out.println("3");
+		}
 	
 		return "admin_createGame.jsp";
 	}
@@ -229,13 +242,35 @@ public class GameController {
 			@Valid @ModelAttribute("gameForm") GameModel gameModel , BindingResult result) {
 		
 		if(result.hasErrors()) {
-			modelView.addAttribute("genreList", this.genreService.findAllGenre());
-			modelView.addAttribute("platformList", this.platformService.findAllPlatform()); 
+			List<GameGenreModel> genreData = this.genreService.findAllGenre();
+			List<GamePlatformModel> platformData = this.platformService.findAllPlatform(); 
+				
+			//Dropdown
+			  modelView.addAttribute("genreList", genreData);
+			  modelView.addAttribute("platformList", platformData); 
+			  
+			if(genreData.isEmpty() && platformData.isEmpty()) {
+				modelView.addAttribute("gameWarning", "Warning: No Genre/Platform data was found; please create them first before able to create game to the list");
+				System.out.println("1");
+			}else if (genreData.isEmpty()) {
+				modelView.addAttribute("gameWarning", "Warning: No Genre data was found; please create them first before able to create game on the list");
+				System.out.println("2");
+			}else if (platformData.isEmpty()) {
+				modelView.addAttribute("gameWarning", "Warning: No Platform data was found; please create them first before able to create game on the list");
+				System.out.println("3");
+			}
+		
 			return "admin_createGame.jsp";
 		}else {
-			if(gameModel.getTrailerUrl().contains("https://youtu.be/")) {
+			if(gameModel.getTrailerUrl().contains("https://youtu.be")) {
 				
-				redirectAttributes.addFlashAttribute("gameCreateMessageError", "ERROR: https://youtu.be/ is found, this parameter only accept video ID");
+				redirectAttributes.addFlashAttribute("gameCreateMessageError", "ERROR: [https://youtu.be/] is found, this parameter only accept video ID, see the Trailer URL tooltip for example");
+				return "redirect:/admin/new/game";
+			}else if(gameModel.getGenreEntity() == null || gameModel.getPlatformEntity() == null){
+				redirectAttributes.addFlashAttribute("gameCreateMessageError", "ERROR: [Genre/Platform] is null \n please create Genre/Platform data via Admin Controls first");
+				return "redirect:/admin/new/game";
+			}else if(!this.gameService.findTitle(gameModel.getTitle()).isEmpty()) {
+				redirectAttributes.addFlashAttribute("gameCreateMessageError", "ERROR: Game already exist on the list");
 				return "redirect:/admin/new/game";
 			}else {
 				this.gameService.createGame(gameModel);
