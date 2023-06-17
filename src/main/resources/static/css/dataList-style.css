@@ -37,3 +37,17 @@ form{
 .tbl-data > * {
 	text-align: center;
 }
+
+#pagination-position{
+	display:flex; 
+	justify-content:center;
+}
+
+.page-item-of{
+	text-align: center;
+}
+
+.tbl-size{
+	width: 1824px;
+	height: 591px;
+}

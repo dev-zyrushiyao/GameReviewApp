@@ -22,7 +22,7 @@
 <body>
 	
 	<div id="back-button">
-		<a href="/admin/view/list/genre">
+		<a href="/admin/view/list/genre/page/0">
 			<span id="back-arrow">&#8249;</span>
 			<span id="back-link"> Go back</span>
 		</a>

@@ -14,6 +14,8 @@ import javax.validation.Valid;
 
 import org.eclipse.jdt.internal.compiler.flow.LoopingFlowContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -523,11 +525,34 @@ public class GameController {
 		}
 	}
 	
-	@GetMapping("/admin/view/list/genre")
-	public String viewListGenre(Model modelView) {
-		List<GameGenreModel> listOfGenre =this.genreService.findAllGenre();
-		modelView.addAttribute("listOfGenre", listOfGenre);
+	//List of genre w/o pagination
+//	@GetMapping("/admin/view/list/genre")
+//	public String viewListGenre(Model modelView) {
+//		List<GameGenreModel> listOfGenre =this.genreService.findAllGenre();
+//		modelView.addAttribute("listOfGenre", listOfGenre);
+//		
+//		return "admin_viewAllGenre.jsp";
+//	}
+//	
+	//Pagination-GENRE
+	//@GetMapping("/genre/pagination/{pageTarget}/{pageSize}")
+	@GetMapping("/admin/view/list/genre/page/{pageTarget}")
+	public String paginationGenre(Model modelView ,@PathVariable int pageTarget) {
 		
+		// default data size per page
+		int pageSize = 10; 
+		PageRequest pageRequest = PageRequest.of(pageTarget, pageSize);
+			
+		Page<GameGenreModel> gameGenreModel = this.genreService.findAllPage(pageRequest);
+		modelView.addAttribute("listOfGenre" , gameGenreModel.getContent()); //.getContent returns the data as List of Iteration of JSP ; w/o it spring boot will throw an error JspTagException:[Don't know how to iterate over supplied "items" in &lt;forEach&gt;]
+		modelView.addAttribute("totalPages", gameGenreModel.getTotalPages());
+		modelView.addAttribute("currentPage", gameGenreModel.getNumber());
+		
+		//For each of PAGE (not returned as List) works in backend
+//		for(GameGenreModel gameGenreContent : gameGenreModel) {
+//			System.out.println("page " + pageTarget + ": " + gameGenreContent.getGenre());
+//		}
+			
 		return "admin_viewAllGenre.jsp";
 	}
 	
@@ -578,9 +603,9 @@ public class GameController {
 			
 			return "redirect:/admin/view/list/genre";
 		}
-		
-
 	}
+	
+	
 	
 	
 	@GetMapping("/admin/new/platform")
@@ -599,10 +624,7 @@ public class GameController {
 		}else {
 			List<GamePlatformModel> platformDataChecker = this.platformService.findPlatformName(gamePlatformModel.getPlatformName());
 			if(!platformDataChecker.isEmpty()) {
-				System.out.println("TEST");
-				System.out.println(!platformDataChecker.isEmpty());
 				redirectAttributes.addFlashAttribute("platformMessageError", "Platform already exist");
-		
 				return "redirect:/admin/new/platform";
 			}else {
 				redirectAttributes.addFlashAttribute("platformMessage", "Platform has been successfully added!");

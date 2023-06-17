@@ -66,7 +66,7 @@
 	 	
 	 	<div>
 	 		<p>
-	 			<a href="/admin/view/list/genre">Manage Genre Data</a>
+	 			<a href="/admin/view/list/genre/page/0">Manage Genre Data</a>
 	 			<img src="/icon/switch-pair.png" class="blue-box" alt="controller icon">
 	 		</p>
 	 	</div>

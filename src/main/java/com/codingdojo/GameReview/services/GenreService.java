@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -58,5 +60,9 @@ public class GenreService {
 		public List<GameGenreModel> findGenre(String genre){
 			return this.genreRepo.findByGenre(genre);
 		}
-	
+		
+		//PagingSort API 
+		public Page<GameGenreModel> findAllPage(Pageable pageable){
+			return this.genreRepo.findAll(pageable);
+		}
 }

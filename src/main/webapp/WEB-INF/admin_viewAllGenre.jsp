@@ -27,9 +27,9 @@
 		
 		
 		<p class="h1" style="text-align:center;">Genre DataList</p>
-			<p class="h4" style="text-align:center; color:red;"><c:out value="${errorMsg}"/></p>
-		
-	<table class="table table-striped">
+		<p class="h4" style="text-align:center; color:red;"><c:out value="${errorMsg}"/></p>
+
+	<table class="table table-hover tbl-size">
   <thead>
     <tr id="tbl-title">
       <th scope="col">ID</th>
@@ -61,6 +61,57 @@
 	</c:forEach>
   </tbody>
 </table>
+	<p class="page-item-of"> Page <c:out value="${currentPage + 1}"/> of <c:out value="${totalPages}"/> </p>
+<div aria-label="Page navigation" id="pagination-position">
+  <ul class="pagination" >
+  
+    <!--PREVIOUS: first page value is 0; currentPage - 1; if previous link will equal to -1 then display the first page link; else continue -1 on previous page link -->
+    <li class="page-item">
+      <c:set var="previousPage" value="${currentPage-1}"></c:set>
+      	<c:if test="${previousPage == -1}">
+	      	<a class="page-link" href="/admin/view/list/genre/page/0" aria-label="Previous">
+	        	<span aria-hidden="true">« Previous</span>
+	      	</a>
+      	</c:if>
+      	
+      	<c:if test="${previousPage != -1}">
+      		<a class="page-link" href="/admin/view/list/genre/page/${previousPage}" aria-label="Previous">
+	        	<span aria-hidden="true">« Previous</span>
+	      	</a>
+      	</c:if>
+    </li>
+   
+    <!-- Pages Content -->
+	 <c:forEach begin="1" end="${totalPages}" step="1" varStatus="loop">
+	 	<c:set var="pageCount" value="${loop.count-1}"></c:set> <!-- loop for pageTarget Route -->
+   	 	<li class="page-item"><a class="page-link" href="/admin/view/list/genre/page/${pageCount}">${loop.count}</a></li>
+	</c:forEach>
+	
+
+	<!-- NEXT -->
+    <li class="page-item">
+    	 <c:set var="nextPage" value="${currentPage+1}"></c:set>
+      		<c:if test="${nextPage < totalPages}">
+			   <a class="page-link" href="/admin/view/list/genre/page/${nextPage}" aria-label="Next">
+			      <span aria-hidden="true"> Next »</span>
+			    </a>
+     		 </c:if>
+     		 
+     		 <c:if test="${nextPage == totalPages}">
+     		 	<c:set var="endOfNextPage" value="${totalPages-1}"></c:set>
+			   <a class="page-link" href="/admin/view/list/genre/page/${endOfNextPage}" aria-label="Next">
+			      <span aria-hidden="true"> Next »</span>
+			    </a>
+     		 </c:if>
+    </li>
+  </ul>
+  
+</div>
+
+	 	
+
+
+
 
 </body>
 </html>
