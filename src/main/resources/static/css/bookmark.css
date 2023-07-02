@@ -1,0 +1,40 @@
+.bookmark-list {
+	border:3px solid black;
+	width: 50%;
+	
+	margin:auto;
+	padding: 2px;
+}
+
+
+.bookmark-details {
+	display: flex;
+
+}
+
+.bookmark-details > .bookmark-title , .bookmark-action {
+	display: flex;
+	
+	justify-content: center;
+	align-items: center;
+
+}
+
+.bookmark-details img {
+	height: 100px;
+	width: 100px;
+	
+	object-fit: contain;
+	
+}
+
+.bookmark-title{
+	flex:1;
+
+	
+}
+
+.bookmark-action{
+	flex:1;
+}
+

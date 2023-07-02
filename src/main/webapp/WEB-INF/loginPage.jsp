@@ -52,6 +52,7 @@
 					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 					<input type="submit" class="btn btn-primary" value="LOGIN"/>
 					<p id="reg-link">Don't have account yet? Sign-up <a href="/registration">here</a> </p>
+					<p id="reg-link">Register as admin <a href="/registration_admin">here</a> </p>
 					<p style="font-family: var(--themeFont) ; font-weight:300 ; font-size:14px">Full-Stack Project by Zyrus Hiyao</p>
 			</form>
 		</div>

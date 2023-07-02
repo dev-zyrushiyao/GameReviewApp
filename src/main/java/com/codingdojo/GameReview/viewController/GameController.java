@@ -253,18 +253,18 @@ public class GameController {
 			  
 			if(genreData.isEmpty() && platformData.isEmpty()) {
 				modelView.addAttribute("gameWarning", "Warning: No Genre/Platform data was found; please create them first before able to create game to the list");
-				System.out.println("1");
+		
 			}else if (genreData.isEmpty()) {
 				modelView.addAttribute("gameWarning", "Warning: No Genre data was found; please create them first before able to create game on the list");
-				System.out.println("2");
+
 			}else if (platformData.isEmpty()) {
 				modelView.addAttribute("gameWarning", "Warning: No Platform data was found; please create them first before able to create game on the list");
-				System.out.println("3");
+	
 			}
 		
 			return "admin_createGame.jsp";
 		}else {
-			if(gameModel.getTrailerUrl().contains("https://youtu.be")) {
+			if(gameModel.getTrailerUrl().contains("youtu.be") || gameModel.getTrailerUrl().contains("youtube")) {
 				
 				redirectAttributes.addFlashAttribute("gameCreateMessageError", "ERROR: [https://youtu.be/] is found, this parameter only accept video ID, see the Trailer URL tooltip for example");
 				return "redirect:/admin/new/game";
@@ -297,13 +297,19 @@ public class GameController {
 	}
 	
 	@PutMapping("/admin/update/game/info/{id}")
-	public String updateGameData(RedirectAttributes redirectAttributes, @PathVariable long id,
+	public String updateGameData(Model modelView, RedirectAttributes redirectAttributes, @PathVariable long id,
 			@Valid @ModelAttribute("updateGameForm") GameModel gameModel , BindingResult result) {
 			
 		if (result.hasErrors()) {
+			  GameModel gameModelInfo = this.gameService.findGameId(id);
+			  modelView.addAttribute("gameInfo" , gameModelInfo);
+			
+			  modelView.addAttribute("genreList", this.genreService.findAllGenre());
+			  modelView.addAttribute("platformList", this.platformService.findAllPlatform()); 
+			
 			return "admin_updateGame.jsp";
 		}else {
-			if(gameModel.getTrailerUrl().contains("youtu.be")) {
+			if(gameModel.getTrailerUrl().contains("youtu.be") || gameModel.getTrailerUrl().contains("youtube") ) {
 				redirectAttributes.addFlashAttribute("gameUpdateError", "Full video URL has been detected, please only put youtube ID");
 				return "redirect:/admin/update/game/"+id;	
 			}else {
@@ -403,7 +409,7 @@ public class GameController {
 		GameModel gameModel = this.gameService.findGameId(id);
 		String ratingFilter = request.getParameter("rating-filter");
 		Integer gameRating = Integer.parseInt(ratingFilter);
-		String pageTarget = "#game_review_title";
+		String pageTarget = "#game-comment";
 		
 		if(!ratingFilter.equals("6")) {
 			List<GameReview> gameReview = this.reviewService.FindCommentsRatingOfGame(gameRating , gameModel);
@@ -525,15 +531,7 @@ public class GameController {
 		}
 	}
 	
-	//List of genre w/o pagination
-//	@GetMapping("/admin/view/list/genre")
-//	public String viewListGenre(Model modelView) {
-//		List<GameGenreModel> listOfGenre =this.genreService.findAllGenre();
-//		modelView.addAttribute("listOfGenre", listOfGenre);
-//		
-//		return "admin_viewAllGenre.jsp";
-//	}
-//	
+
 	//Pagination-GENRE
 	//@GetMapping("/genre/pagination/{pageTarget}/{pageSize}")
 	@GetMapping("/admin/view/list/genre/page/{pageTarget}")
@@ -635,11 +633,23 @@ public class GameController {
 		}
 	}
 	
-	
-	@GetMapping("/admin/view/list/platform")
-	public String viewListPlatform(Model modelView) {
+	//Pagination Platform	
+	@GetMapping("/admin/view/list/platform/page/{pageTarget}")
+	public String paginationPlatform(Model modelView , @PathVariable int pageTarget) {
 		
-		modelView.addAttribute("listOfPlatform", this.platformService.findAllPlatform());
+			// default data size per page
+			int pageSize = 10; 
+			PageRequest pageRequest = PageRequest.of(pageTarget, pageSize);
+				
+			Page<GamePlatformModel> gamePlatformModel = this.platformService.findAllPage(pageRequest);
+			modelView.addAttribute("listOfPlatform" , gamePlatformModel.getContent()); //.getContent returns the data as List of Iteration of JSP ; w/o it spring boot will throw an error JspTagException:[Don't know how to iterate over supplied "items" in &lt;forEach&gt;]
+			modelView.addAttribute("totalPages", gamePlatformModel.getTotalPages());
+			modelView.addAttribute("currentPage", gamePlatformModel.getNumber());
+			
+			//For each of PAGE (not returned as List) works in backend
+//			for(GamePlatformModel gamePlatformContent : gamePlatformModel) {
+//				System.out.println("page " + pageTarget + ": " + gamePlatformContent.getGenre());
+//			}
 		
 		return "admin_viewAllPlatform.jsp";
 	}
@@ -659,7 +669,6 @@ public class GameController {
 		
 		if(result.hasErrors()) {
 			GamePlatformModel gamePlatformModel = this.platformService.findPlaformId(id);
-//			modelView.addAttribute("platformForm", gamePlatformModel);
 			
 			modelView.addAttribute("gamePlatformModel",gamePlatformModel);
 			
@@ -690,11 +699,33 @@ public class GameController {
 			
 			return "redirect:/admin/view/list/platform";
 		}
-		
-		
-		
 			
-		}
+	}
+	
+	//Bookmarks
+	@GetMapping("/view/bookmark")
+	public String viewBookmarkPage(Principal principal , Model modelView) {
+		
+		String username = principal.getName();
+		UserModel currentUser = userService.findByUsername(username);
+        modelView.addAttribute("currentUser", currentUser); 
+        
+        modelView.addAttribute("userBookmark", currentUser.getGames());
+		
+		return "user_bookmark.jsp";
+	}
+	
+	@GetMapping("/remove/bookmarklist/{id}")
+	public String removeBookmarksPage(Principal principal, @PathVariable Long id) {
+		String username = principal.getName();
+		UserModel currentUser = this.userService.findByUsername(username);
+		
+		GameModel gameModel = this.gameService.findGameId(id);
+		
+		this.gameService.userRemoveBookmark(currentUser, gameModel);
+		
+		return "redirect:/view/bookmark";
+	}
 		
 	
 	

@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.codingdojo.GameReview.models.GameGenreModel;
 import com.codingdojo.GameReview.models.GameModel;
 import com.codingdojo.GameReview.models.GamePlatformModel;
 
@@ -55,5 +58,10 @@ public class PlatformService {
 	
 	public List<GamePlatformModel> findPlatformName(String platformName){
 		return this.platformRepo.findByPlatformName(platformName);
+	}
+	
+	//PagingSort API 
+	public Page<GamePlatformModel> findAllPage(Pageable pageable){
+		return this.platformRepo.findAll(pageable);
 	}
 }

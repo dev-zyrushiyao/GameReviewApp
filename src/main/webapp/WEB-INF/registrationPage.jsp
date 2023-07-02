@@ -42,6 +42,12 @@
 			  		<label style="color:green"><c:out value="${registrationMessage}"/></label> 
 				</div>
 			</c:if>
+			
+			<c:if test="${userNameDataCheckerMessage != null}" >
+				<div class="alert alert-danger login-message" role="alert">
+			  		<p style="color:red"><c:out value="${userNameDataCheckerMessage}"/></p> 
+				</div>
+			</c:if>
 	    
 	   
 	    

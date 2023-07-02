@@ -104,13 +104,20 @@ public class LoginController {
 		    	//Register as USER	
 		    	userValidator.validate(userModel, result);
 		        if (result.hasErrors()) {
-		        	
+
 		            return "registrationPage.jsp";
 		        }else {
-		        	redirectAttributes.addFlashAttribute("registrationMessage", "Account successfully created.");
-		        	 userService.saveWithUserRole(userModel);
-				     
-		        	 return "redirect:/registration";
+		        	UserModel userNameDataChecker = this.userService.findByUsername(userModel.getUserName());
+			        	if(userNameDataChecker != null) {
+			        		
+			        		redirectAttributes.addFlashAttribute("userNameDataCheckerMessage", "Username already exist");
+			        		return "redirect:/registration";
+			        	}else {
+			        		redirectAttributes.addFlashAttribute("registrationMessage", "Account successfully created.");
+				        	 userService.saveWithUserRole(userModel);
+						     
+				        	 return "redirect:/registration";
+			        	}
 		        }
 		        
 		       
@@ -125,16 +132,27 @@ public class LoginController {
 		    @PostMapping("/registration_admin")
 		    public String registrationAdmin(@Valid @ModelAttribute("user") UserModel userModel,
 		    		BindingResult result, Model modelView, HttpSession session , RedirectAttributes redirectAttributes) {
-
+		    	
+		    	//conditional JSP (Bootstrap for register validation via spring security)
+		    	modelView.addAttribute("userModel", userModel);
+		    	
 		    	//Register as ADMIN
 		    	userValidator.validate(userModel, result);
 		    	if (result.hasErrors()) {
 		    		
 		    		return "registrationPageAdmin.jsp";
 		        }else {
-		        	redirectAttributes.addFlashAttribute("registrationMessage", "Account successfully created.");
-			        userService.saveUserWithAdminRole(userModel);
-			        return "redirect:/registration_admin";
+		        	UserModel userNameDataChecker = this.userService.findByUsername(userModel.getUserName());
+		        	if(userNameDataChecker != null) {
+		        		
+		        		redirectAttributes.addFlashAttribute("userNameDataCheckerMessage", "Username already exist");
+		        		return "redirect:/registration_admin";
+		        	}else {
+		        		redirectAttributes.addFlashAttribute("registrationMessage", "Account successfully created.");
+				        userService.saveUserWithAdminRole(userModel);
+				        return "redirect:/registration_admin";
+		        	}
+
 		        }
 		    }
 		    

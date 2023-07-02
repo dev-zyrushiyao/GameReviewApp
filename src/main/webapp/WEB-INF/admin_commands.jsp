@@ -73,7 +73,7 @@
 	 	
 	 	<div>
 	 		<p>
-	 			<a href="/admin/view/list/platform">Manage Platform Data</a>
+	 			<a href="/admin/view/list/platform/page/0">Manage Platform Data</a>
 	 			<img src="/icon/sus-icon.png" class="pink-box" alt="sus icon">
 	 		</p>
 	 	</div>

@@ -21,7 +21,6 @@
 </head>
 <body>
 	
-	<!-- TO BE ADD VIEW BOOKMARKS + delete game -->
 	<div id="sticky-header">
 		<div id="header-flexbox">
 			<a href="/">GO BACK</a> 
@@ -39,9 +38,9 @@
 				<span class="link-separator"> / </span>
 			<a href="#pv-section">Trailer</a>
 				<span class="link-separator"> / </span>
-			<a href="#game_review_title">Reviews</a>
+			<a href="#game-comment">Reviews</a>
 						<span class="link-separator"> / </span>
-			<a href="/view/bookmark/">View Bookmarks</a>
+			<a href="/view/bookmark">View Bookmarks</a>
 		</div>
 	</div>
 	
